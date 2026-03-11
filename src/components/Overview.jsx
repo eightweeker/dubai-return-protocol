@@ -222,7 +222,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         }} />
 
         {/* Top bar */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start px-8 sm:px-12 pt-8 sm:pt-10">
+        <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start px-6 sm:px-12 lg:px-24 pt-8 sm:pt-10">
           <div>
             <div className="text-white/90 text-[11px] font-medium tracking-[0.2em] uppercase">Dubai Travel</div>
             <div className="text-white text-[11px] font-bold tracking-[0.2em] uppercase">Dashboard</div>
@@ -233,7 +233,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </div>
 
         {/* Score */}
-        <div className="absolute left-8 sm:left-12 z-10 animate-score" style={{ bottom: '30%' }}>
+        <div className="absolute left-6 sm:left-12 lg:left-24 z-10 animate-score" style={{ bottom: '30%' }}>
           <div className="text-white font-extralight leading-[0.85] tracking-[-0.04em]"
             style={{ fontSize: 'clamp(100px, 22vw, 300px)' }}>
             {latestComposite}<span className="text-[0.65em]">%</span>
@@ -241,7 +241,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </div>
 
         {/* Recommendation */}
-        <div className="absolute left-8 sm:left-12 bottom-16 sm:bottom-20 z-10">
+        <div className="absolute left-6 sm:left-12 lg:left-24 bottom-16 sm:bottom-20 z-10">
           <p className="text-white/60 text-sm mb-1">Recommendation:</p>
           <p className="text-white text-xl sm:text-2xl font-light leading-snug">
             {getRecommendation(latestVerdict)}
@@ -249,7 +249,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </div>
 
         {/* Right panel — readiness conditions */}
-        <div className="absolute right-8 sm:right-12 bottom-16 sm:bottom-20 z-10 hidden md:block">
+        <div className="absolute right-6 sm:right-12 lg:right-24 bottom-16 sm:bottom-20 z-10 hidden md:block">
           <div className="rounded-xl px-5 py-4 space-y-2.5"
             style={{ background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
             {readinessChecks.map(check => (
@@ -266,18 +266,18 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute left-8 sm:left-12 bottom-6 z-10">
+        <div className="absolute left-6 sm:left-12 lg:left-24 bottom-6 z-10">
           <span className="text-white/30 text-[9px] tracking-[0.3em] uppercase font-medium">Scroll</span>
         </div>
       </section>
 
       {/* ═══════ CHART ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-8 sm:px-12 pt-16 pb-8">
+      <section className="max-w-[1100px] mx-auto px-6 sm:px-12 lg:px-24 pt-16 pb-8">
         <TrendChart entries={entries} />
       </section>
 
       {/* ═══════ ACTIONS ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-8 sm:px-12 pb-12">
+      <section className="max-w-[1100px] mx-auto px-6 sm:px-12 lg:px-24 pb-12">
         <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => onEditDay(today)}
@@ -301,9 +301,9 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
       </section>
 
       {/* ═══════ DAYS ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-8 sm:px-12 pb-16">
+      <section className="max-w-[1100px] mx-auto px-6 sm:px-12 lg:px-24 pb-16">
         <div className="flex items-end justify-between mb-8">
-          <h2 className="font-serif text-4xl sm:text-5xl leading-none">Days</h2>
+          <h2 className="text-4xl sm:text-5xl font-extralight leading-none tracking-tight">Days</h2>
           <div className="flex items-center gap-6">
             <span className="label-caps-sm">{entries.length} days tracked</span>
           </div>
@@ -326,7 +326,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
 
       {/* ═══════ FOOTER ═══════ */}
       <footer className="border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg-alt)' }}>
-        <div className="max-w-[1100px] mx-auto px-8 sm:px-12 py-12">
+        <div className="max-w-[1100px] mx-auto px-6 sm:px-12 lg:px-24 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
               <span className="label-caps-sm block mb-3">Methodology</span>
