@@ -209,6 +209,7 @@ export const BASELINE_DATA = [
   { date: '2026-03-09', scores: { flights: 3, incidents: 3, hormuz: 1, oil: 2, advisory: 2, ceasefire: 2, airport_threat: 3, healthcare: 3, exit: 3 }, note: 'First exit from RED. China/Russia/France contact Iran re ceasefire. Emirates at 84 destinations.' },
   { date: '2026-03-10', scores: { flights: 3, incidents: 3, hormuz: 1, oil: 2, advisory: 2, ceasefire: 2, airport_threat: 3, healthcare: 3, exit: 3 }, note: 'Trump says war over "pretty quickly" but "not this week." Araghchi says fight "as long as it takes."' },
   { date: '2026-03-11', scores: { flights: 3, incidents: 3, hormuz: 1, oil: 2, advisory: 2, ceasefire: 2, airport_threat: 3, healthcare: 3, exit: 3 }, note: 'Day 11. Embassy still closed. DXB ~60% ops. No ceasefire. Family departs for Almaty tonight.' },
+  { date: '2026-03-12', scores: { flights: 3, incidents: 2, hormuz: 1, oil: 3, advisory: 2, ceasefire: 2, airport_threat: 2, healthcare: 3, exit: 3 }, note: 'Day 12. DXB drones injured 4 near terminal yesterday. IRGC vows total Hormuz blockade. Brent eases to $89. Mojtaba Khamenei installed as new supreme leader.' },
 ];
 
 export const ALL_SOURCE_URLS = [

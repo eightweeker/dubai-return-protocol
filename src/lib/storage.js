@@ -8,6 +8,14 @@ export function loadEntries() {
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
+        // Merge any new baseline entries that aren't in localStorage yet
+        const existingDates = new Set(parsed.map((e) => e.date));
+        const newEntries = BASELINE_DATA.filter((e) => !existingDates.has(e.date));
+        if (newEntries.length > 0) {
+          const merged = [...parsed, ...newEntries];
+          saveEntries(merged);
+          return merged.sort((a, b) => a.date.localeCompare(b.date));
+        }
         return parsed.sort((a, b) => a.date.localeCompare(b.date));
       }
     }
