@@ -1,4 +1,4 @@
-export const CONFLICT_START = '2026-02-28';
+export const CONFLICT_START = '2026-02-28'; // automated test — will revert
 
 export const FACTORS = [
   {
