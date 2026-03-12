@@ -2,12 +2,12 @@ import { useMemo, useRef, useState, useEffect } from 'react';
 import { calculateComposite, formatDate } from '../lib/scoring';
 
 const LINES = [
-  { id: 'composite', label: 'Composite', color: '#FFFFFF', width: 2.5, getValue: (e) => calculateComposite(e.scores) },
-  { id: 'incidents', label: 'Incidents', color: '#FF4D6A', width: 1.5, getValue: (e) => ((e.scores.incidents - 1) / 4) * 100 },
-  { id: 'ceasefire', label: 'Ceasefire', color: '#818CF8', width: 1.5, getValue: (e) => ((e.scores.ceasefire - 1) / 4) * 100 },
-  { id: 'healthcare', label: 'Healthcare', color: '#2DD4BF', width: 1.5, getValue: (e) => ((e.scores.healthcare - 1) / 4) * 100 },
-  { id: 'flights', label: 'Flights', color: '#FBBF24', width: 1.5, getValue: (e) => ((e.scores.flights - 1) / 4) * 100 },
-  { id: 'exit', label: 'Exit Viability', color: '#C084FC', width: 1.5, getValue: (e) => ((e.scores.exit - 1) / 4) * 100 },
+  { id: 'composite', label: 'Composite', color: '#1A1A1A', width: 2.5, getValue: (e) => calculateComposite(e.scores) },
+  { id: 'incidents', label: 'Incidents', color: '#E87461', width: 1.2, getValue: (e) => ((e.scores.incidents - 1) / 4) * 100 },
+  { id: 'ceasefire', label: 'Ceasefire', color: '#7C8CF8', width: 1.2, getValue: (e) => ((e.scores.ceasefire - 1) / 4) * 100 },
+  { id: 'healthcare', label: 'Healthcare', color: '#34B89C', width: 1.2, getValue: (e) => ((e.scores.healthcare - 1) / 4) * 100 },
+  { id: 'flights', label: 'Flights', color: '#E5A63B', width: 1.2, getValue: (e) => ((e.scores.flights - 1) / 4) * 100 },
+  { id: 'exit', label: 'Exit Viability', color: '#A78BDB', width: 1.2, getValue: (e) => ((e.scores.exit - 1) / 4) * 100 },
 ];
 
 function smoothPath(points) {
@@ -47,7 +47,6 @@ export default function TrendChart({ entries }) {
     [sorted]
   );
 
-  // Measure path lengths for drawing animation
   useEffect(() => {
     if (!svgRef.current) return;
     const timer = setTimeout(() => {
@@ -64,8 +63,8 @@ export default function TrendChart({ entries }) {
   if (data.length < 2) return null;
 
   const W = 760;
-  const H = 300;
-  const pad = { top: 20, right: 20, bottom: 40, left: 35 };
+  const H = 280;
+  const pad = { top: 20, right: 16, bottom: 36, left: 32 };
   const plotW = W - pad.left - pad.right;
   const plotH = H - pad.top - pad.bottom;
 
@@ -75,39 +74,35 @@ export default function TrendChart({ entries }) {
   const hasLengths = Object.keys(pathLengths).length > 0;
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden chart-glass">
+    <div className="w-full rounded-2xl overflow-hidden"
+      style={{
+        background: 'rgba(255,255,255,0.7)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.04)',
+      }}>
       {/* Legend */}
-      <div className="flex items-center gap-5 px-6 pt-5 pb-3 flex-wrap">
+      <div className="flex items-center gap-5 px-6 pt-5 pb-2 flex-wrap">
         {LINES.map(line => (
           <div key={line.id} className="flex items-center gap-2">
             <div className="rounded-full" style={{
               width: line.id === 'composite' ? 16 : 12,
               height: line.id === 'composite' ? 2.5 : 1.5,
               background: line.color,
-              opacity: line.id === 'composite' ? 1 : 0.7,
-              boxShadow: `0 0 6px ${line.color}60`,
+              opacity: line.id === 'composite' ? 1 : 0.6,
             }} />
-            <span className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.45)' }}>{line.label}</span>
+            <span className="text-[10px] font-medium" style={{ color: 'var(--text-3)' }}>{line.label}</span>
           </div>
         ))}
       </div>
 
-      <div className="px-5 pb-5 relative">
-        {/* Ambient glow orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(129,140,248,0.12) 0%, transparent 70%)', animation: 'ambientFloat 6s ease-in-out infinite' }} />
-          <div className="absolute top-1/3 right-1/4 w-24 h-24 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(45,212,191,0.1) 0%, transparent 70%)', animation: 'ambientFloat 8s ease-in-out infinite 2s' }} />
-          <div className="absolute bottom-1/4 left-1/2 w-28 h-28 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%)', animation: 'ambientFloat 7s ease-in-out infinite 1s' }} />
-        </div>
-
-        <svg ref={svgRef} width="100%" viewBox={`0 0 ${W} ${H}`} className="block overflow-visible relative">
+      <div className="px-4 pb-4">
+        <svg ref={svgRef} width="100%" viewBox={`0 0 ${W} ${H}`} className="block overflow-visible">
           <defs>
             <linearGradient id="compositeAreaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+              <stop offset="0%" stopColor="rgba(26,26,26,0.08)" />
+              <stop offset="100%" stopColor="rgba(26,26,26,0)" />
             </linearGradient>
           </defs>
 
@@ -117,10 +112,11 @@ export default function TrendChart({ entries }) {
               <line
                 x1={pad.left} y1={yScale(val)}
                 x2={W - pad.right} y2={yScale(val)}
-                stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"
+                stroke="rgba(0,0,0,0.05)" strokeWidth="0.5"
+                strokeDasharray={val === 0 ? 'none' : '4,3'}
               />
               <text x={pad.left - 6} y={yScale(val) + 3}
-                fill="rgba(255,255,255,0.2)" fontSize="8" fontWeight="400" textAnchor="end">
+                fill="var(--text-3)" fontSize="8" fontWeight="400" textAnchor="end">
                 {val}
               </text>
             </g>
@@ -133,10 +129,10 @@ export default function TrendChart({ entries }) {
             const areaD = pathD
               + ` L ${points[points.length - 1][0]},${pad.top + plotH}`
               + ` L ${points[0][0]},${pad.top + plotH} Z`;
-            return <path d={areaD} fill="url(#compositeAreaGrad)" opacity={hasLengths ? 0.6 : 0} style={{ transition: 'opacity 1s ease 0.5s' }} />;
+            return <path d={areaD} fill="url(#compositeAreaGrad)" opacity={hasLengths ? 1 : 0} style={{ transition: 'opacity 0.8s ease 0.4s' }} />;
           })()}
 
-          {/* Factor lines (behind composite) */}
+          {/* Factor lines */}
           {LINES.filter(l => l.id !== 'composite').map((line, idx) => {
             const points = data.map((d, i) => [xScale(i), yScale(d.values[line.id])]);
             const pathD = smoothPath(points);
@@ -147,12 +143,11 @@ export default function TrendChart({ entries }) {
                 d={pathD}
                 fill="none" stroke={line.color}
                 strokeWidth={line.width}
-                opacity={hasLengths ? 0.65 : 0.4}
+                opacity={hasLengths ? 0.45 : 0.2}
                 style={{
-                  filter: `drop-shadow(0 0 4px ${line.color}50)`,
                   strokeDasharray: len || 'none',
                   strokeDashoffset: 0,
-                  animation: len ? `drawLine 1.5s ease-out ${0.3 + idx * 0.12}s both` : 'none',
+                  animation: len ? `drawLine 1.2s ease-out ${0.2 + idx * 0.1}s both` : 'none',
                   '--line-length': len,
                   transition: 'opacity 0.5s ease',
                 }}
@@ -160,7 +155,7 @@ export default function TrendChart({ entries }) {
             );
           })}
 
-          {/* Composite line (on top) */}
+          {/* Composite line */}
           {(() => {
             const points = data.map((d, i) => [xScale(i), yScale(d.values.composite)]);
             const pathD = smoothPath(points);
@@ -169,36 +164,29 @@ export default function TrendChart({ entries }) {
               <path
                 data-line-id="composite"
                 d={pathD}
-                fill="none" stroke="#FFFFFF"
+                fill="none" stroke="#1A1A1A"
                 strokeWidth="2.5"
                 style={{
-                  filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.35)) drop-shadow(0 0 20px rgba(255,255,255,0.15))',
                   strokeDasharray: len || 'none',
                   strokeDashoffset: 0,
-                  animation: len ? 'drawLine 1.8s ease-out 0.1s both' : 'none',
+                  animation: len ? 'drawLine 1.5s ease-out 0.1s both' : 'none',
                   '--line-length': len,
                 }}
               />
             );
           })()}
 
-          {/* End dots with pulse */}
-          {LINES.map((line, idx) => {
+          {/* End dots */}
+          {LINES.map((line) => {
             const lastPt = [xScale(data.length - 1), yScale(data[data.length - 1].values[line.id])];
-            const baseR = line.id === 'composite' ? 4.5 : 2.5;
+            const isComposite = line.id === 'composite';
             return (
               <circle key={`dot-${line.id}`}
                 cx={lastPt[0]} cy={lastPt[1]}
-                r={baseR}
-                fill={line.color}
-                opacity={hasLengths ? 1 : 0}
-                style={{
-                  filter: `drop-shadow(0 0 6px ${line.color}) drop-shadow(0 0 12px ${line.color}60)`,
-                  transformOrigin: `${lastPt[0]}px ${lastPt[1]}px`,
-                  transformBox: 'fill-box',
-                  animation: hasLengths ? `pulseDot 3s ease-in-out ${1.8 + idx * 0.15}s infinite` : 'none',
-                  transition: 'opacity 0.5s ease 1.5s',
-                }}
+                r={isComposite ? 4 : 2.5}
+                fill={isComposite ? '#1A1A1A' : line.color}
+                opacity={hasLengths ? (isComposite ? 1 : 0.6) : 0}
+                style={{ transition: 'opacity 0.5s ease 1.2s' }}
               />
             );
           })}
@@ -206,8 +194,8 @@ export default function TrendChart({ entries }) {
           {/* X-axis labels */}
           {data.map((d, i) => (
             <text key={d.date}
-              x={xScale(i)} y={H - 8}
-              fill="rgba(255,255,255,0.3)" fontSize="9" fontWeight="500" textAnchor="middle"
+              x={xScale(i)} y={H - 6}
+              fill="var(--text-3)" fontSize="9" fontWeight="500" textAnchor="middle"
             >
               {formatDate(d.date).toUpperCase()}
             </text>

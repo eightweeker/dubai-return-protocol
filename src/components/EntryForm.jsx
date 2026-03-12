@@ -118,7 +118,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
   return (
     <div className="animate-in min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* Top bar */}
-      <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24 pt-8 pb-4">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-10 pt-8 pb-4">
         <div className="flex items-center justify-between">
           <button onClick={onCancel}
             className="text-xs font-medium flex items-center gap-1 transition-colors hover:opacity-60"
@@ -132,7 +132,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       </div>
 
       {/* Header */}
-      <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24 pb-4">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-10 pb-4">
         <div className="text-[10px] font-medium tracking-[0.15em] uppercase mb-2" style={{ color: 'var(--text-3)' }}>
           {conflictDay >= 0 ? `Day ${conflictDay} of conflict` : 'Pre-conflict'}
         </div>
@@ -143,7 +143,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
 
       {/* Sticky composite preview */}
       <div className="sticky top-0 z-20" style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24 py-3 flex items-center justify-between">
+        <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-3xl font-light tabular-nums" style={{ letterSpacing: '-0.03em' }}>
               {composite}
@@ -162,7 +162,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       </div>
 
       {/* Factor inputs */}
-      <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-10">
         {FACTORS.map(factor => (
           <ScoreSelector
             key={factor.id}
@@ -174,7 +174,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       </div>
 
       {/* Day note */}
-      <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24 py-8">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-8">
         <span className="label-caps-sm block mb-3">Day Note</span>
         <textarea
           value={note}
@@ -192,7 +192,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       </div>
 
       {/* Bottom actions */}
-      <div className="max-w-[900px] mx-auto px-6 sm:px-12 lg:px-24 pb-16 flex gap-3">
+      <div className="max-w-[900px] mx-auto px-6 sm:px-10 pb-16 flex gap-3">
         <button onClick={handleSave}
           className="flex-1 text-sm font-medium py-3 rounded-full transition-all hover:scale-[1.01] active:scale-[0.99]"
           style={{ background: 'var(--text)', color: 'var(--bg)' }}>
