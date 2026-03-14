@@ -211,6 +211,7 @@ export const BASELINE_DATA = [
   { date: '2026-03-11', scores: { flights: 3, incidents: 3, hormuz: 1, oil: 2, advisory: 2, ceasefire: 2, airport_threat: 3, healthcare: 3, exit: 3 }, note: 'Day 11. Embassy still closed. DXB ~60% ops. No ceasefire. Family departs for Almaty tonight.' },
   { date: '2026-03-12', scores: { flights: 3, incidents: 2, hormuz: 1, oil: 3, advisory: 2, ceasefire: 2, airport_threat: 2, healthcare: 3, exit: 3 }, note: 'Day 12. DXB drones injured 4 near terminal yesterday. IRGC vows total Hormuz blockade. Brent eases to $89. Mojtaba Khamenei installed as new supreme leader.' },
   { date: '2026-03-13', scores: { flights: 3, incidents: 3, hormuz: 1, oil: 2, advisory: 2, ceasefire: 3, airport_threat: 2, healthcare: 3, exit: 3 }, note: 'Day 13. Iran publicly sets 3 ceasefire conditions (reparations, security guarantees, rights); Russia mediating and CIA backchannel confirmed. Oil reverses to $101 as new Supreme Leader vows Hormuz closure is permanent. No new DXB incidents since March 11.' },
+  { date: '2026-03-14', scores: { flights: 3, incidents: 2, hormuz: 1, oil: 2, advisory: 1, ceasefire: 3, airport_threat: 3, healthcare: 3, exit: 3 }, note: 'Day 14. Drones hit Dubai financial district, Creek Harbour, residential areas March 12-13. Ceasefire deadlocked despite 3 public conditions and active backchannels. Brent at $103; AU embassy closed + evac ordered; Hormuz at zero transits. Emirates at 110+ destinations, last DXB incident 3 days ago.' },
 ];
 
 export const ALL_SOURCE_URLS = [
