@@ -196,9 +196,9 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </header>
 
         {/* ── HERO TITLE ── */}
-        <div className="pt-[80px] sm:pt-[120px] pb-[56px] sm:pb-[72px] text-center">
+        <div className="pt-[200px] sm:pt-[120px] pb-[176px] sm:pb-[72px] text-center">
           <h1 className="font-syne font-bold text-white leading-[1] tracking-[-2.4px]"
-            style={{ fontSize: 'clamp(48px, 8.3vw, 120px)' }}>
+            style={{ fontSize: 'clamp(34px, 8.3vw, 120px)' }}>
             Is it Safe to Travel to<br />Dubai Today?
           </h1>
         </div>
