@@ -13,13 +13,13 @@ function ScoreSelector({ factor, value, onChange }) {
             <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
               {factor.name}
             </span>
-            <span className="text-[9px] font-medium px-2 py-0.5 rounded"
+            <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded"
               style={{ background: 'var(--bg-alt)', color: 'var(--text-3)' }}>
               WT {factor.weight}
             </span>
             {factor.inverse && (
               <span className="text-[8px] font-semibold px-2 py-0.5 rounded"
-                style={{ background: '#FEF2F2', color: '#DC2626' }}>
+                style={{ background: 'rgba(220,38,38,0.15)', color: '#F87171' }}>
                 INVERSE
               </span>
             )}
@@ -133,10 +133,10 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
 
       {/* Header */}
       <div className="max-w-[900px] mx-auto px-6 sm:px-10 pb-4">
-        <div className="text-[10px] font-medium tracking-[0.15em] uppercase mb-2" style={{ color: 'var(--text-3)' }}>
+        <div className="font-mono text-[10px] font-bold tracking-[0.15em] uppercase mb-2" style={{ color: 'var(--text-3)' }}>
           {conflictDay >= 0 ? `Day ${conflictDay} of conflict` : 'Pre-conflict'}
         </div>
-        <h2 className="text-3xl sm:text-4xl font-extralight leading-tight tracking-tight">
+        <h2 className="font-syne text-3xl sm:text-4xl font-bold leading-tight tracking-tight" style={{ color: 'var(--text)' }}>
           {formatDateLong(date)}
         </h2>
       </div>
@@ -145,16 +145,16 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       <div className="sticky top-0 z-20" style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-[900px] mx-auto px-6 sm:px-10 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-3xl font-light tabular-nums" style={{ letterSpacing: '-0.03em' }}>
+            <span className="font-syne text-3xl font-bold tabular-nums" style={{ letterSpacing: '-0.03em', color: 'var(--text)' }}>
               {composite}
             </span>
-            <span className="text-[10px] font-semibold px-3 py-1 rounded-full"
+            <span className="font-mono text-[10px] font-bold px-3 py-1 rounded-full"
               style={{ background: 'var(--bg-alt)', color: 'var(--text-2)', border: '1px solid var(--border)' }}>
               {verdict.label}
             </span>
           </div>
           <button onClick={handleSave}
-            className="text-xs font-medium px-5 py-2 rounded-full transition-all hover:scale-105 active:scale-95"
+            className="font-jakarta text-xs font-medium px-5 py-2 rounded-full transition-all hover:scale-105 active:scale-95"
             style={{ background: 'var(--text)', color: 'var(--bg)' }}>
             Save Entry
           </button>
@@ -181,7 +181,7 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
           onChange={(e) => setNote(e.target.value)}
           placeholder="1-3 sentences summarising the most significant development..."
           rows={3}
-          className="w-full rounded-xl px-5 py-4 text-sm resize-none outline-none transition-colors"
+          className="font-jakarta w-full rounded-xl px-5 py-4 text-sm resize-none outline-none transition-colors"
           style={{
             background: 'var(--bg-alt)',
             color: 'var(--text)',
@@ -194,12 +194,12 @@ export default function EntryForm({ entries, date, existingEntry, onSave, onCanc
       {/* Bottom actions */}
       <div className="max-w-[900px] mx-auto px-6 sm:px-10 pb-16 flex gap-3">
         <button onClick={handleSave}
-          className="flex-1 text-sm font-medium py-3 rounded-full transition-all hover:scale-[1.01] active:scale-[0.99]"
+          className="font-jakarta flex-1 text-sm font-medium py-3 rounded-full transition-all hover:scale-[1.01] active:scale-[0.99]"
           style={{ background: 'var(--text)', color: 'var(--bg)' }}>
           Save Entry
         </button>
         <button onClick={onCancel}
-          className="text-sm font-medium py-3 px-8 rounded-full transition-all hover:scale-[1.01]"
+          className="font-jakarta text-sm font-medium py-3 px-8 rounded-full transition-all hover:scale-[1.01]"
           style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
           Cancel
         </button>

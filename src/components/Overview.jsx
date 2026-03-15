@@ -27,81 +27,59 @@ function getCriticalTags(scores) {
   return tags;
 }
 
-function formatDateCompact(dateStr) {
+function formatRowDate(dateStr) {
   const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
-}
-
-function formatHeroDate(dateStr) {
-  const d = new Date(dateStr + 'T12:00:00');
-  const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
-  const day = d.getDate();
-  const month = d.toLocaleDateString('en-US', { month: 'long' });
-  const year = d.getFullYear();
-  const suffix = [11, 12, 13].includes(day % 100) ? 'th'
-    : day % 10 === 1 ? 'st' : day % 10 === 2 ? 'nd' : day % 10 === 3 ? 'rd' : 'th';
-  return `${weekday}, ${day}${suffix} ${month} ${year}`;
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(2);
+  return `${dd}.${mm}.${yy}`;
 }
 
 function getRecommendation(verdict) {
   if (!verdict) return 'Awaiting data';
   const map = {
-    'GO': 'Safe to travel',
-    'CONDITIONAL GO': 'Travel with caution',
-    'HOLD': 'Delay travel plans',
-    'NO GO': 'Do not travel today',
-    'RED': 'Do not travel — high risk',
+    'GO': 'Safe to travel.',
+    'CONDITIONAL GO': 'Travel with caution.',
+    'HOLD': 'Delay travel plans.',
+    'NO GO': 'Do not travel today.',
+    'RED': 'Do not travel — high risk.',
   };
   return map[verdict.label] || verdict.meaning;
 }
 
-/* ── DayRow ── */
-function DayRow({ entry, entries, isExpanded, onToggle, onEdit }) {
+/* ── DayRow (matches Figma table row) ── */
+function DayRow({ entry, entries, prevEntry, isExpanded, onToggle, onEdit }) {
   const composite = calculateComposite(entry.scores);
   const verdict = getVerdict(composite);
-  const tags = getCriticalTags(entry.scores);
 
   return (
-    <div style={{ borderBottom: '1px solid var(--border)' }}>
-      {/* Row header */}
+    <div style={{ borderTop: '1px solid var(--border)' }}>
       <div
-        className="flex items-center py-5 cursor-pointer group"
+        className="flex items-center py-4 cursor-pointer group gap-4"
         onClick={onToggle}
       >
-        {/* Left: date + note + verdict */}
-        <div className="flex-1 min-w-0 pr-4">
-          <div className="text-[11px] font-medium" style={{ color: 'var(--text-3)' }}>
-            {formatDateCompact(entry.date)}
-          </div>
-          <div className="text-sm font-medium mt-1 line-clamp-2 leading-snug" style={{ color: 'var(--text)' }}>
-            {entry.note || `Assessment for ${formatDate(entry.date)}`}
-          </div>
-          <div className="text-[11px] mt-1.5 font-medium" style={{ color: 'var(--text-3)' }}>
+        {/* Date */}
+        <div className="font-jakarta text-[15px] font-normal whitespace-nowrap flex-shrink-0 w-[72px]"
+          style={{ color: 'var(--text)' }}>
+          {formatRowDate(entry.date)}
+        </div>
+
+        {/* Note */}
+        <div className="flex-1 min-w-0 font-jakarta text-[15px] font-normal leading-[20px] truncate"
+          style={{ color: 'var(--text)' }}>
+          {entry.note || `Assessment for ${formatDate(entry.date)}`}
+        </div>
+
+        {/* Verdict + Score */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <span className="font-jakarta text-[15px] font-normal whitespace-nowrap"
+            style={{ color: 'var(--text-2)' }}>
             {verdict.label}
-          </div>
-        </div>
-
-        {/* Tags */}
-        <div className="hidden sm:flex items-center gap-2 mr-6 flex-shrink-0">
-          {tags.map(tag => (
-            <span key={tag} className="tag-pill">{tag}</span>
-          ))}
-        </div>
-
-        {/* Score */}
-        <div className="text-3xl sm:text-4xl font-light tabular-nums mr-4 flex-shrink-0"
-          style={{ letterSpacing: '-0.03em', color: 'var(--text)', minWidth: '48px', textAlign: 'right' }}>
-          {composite}
-        </div>
-
-        {/* Expand */}
-        <div className="flex items-center gap-1.5 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity">
-          <span className="label-caps-sm hidden sm:inline">EXPAND</span>
-          <span className="text-xs transition-transform" style={{
-            display: 'inline-block',
-            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-            color: 'var(--text-3)',
-          }}>↓</span>
+          </span>
+          <span className="font-jakarta text-[15px] font-bold tabular-nums whitespace-nowrap"
+            style={{ color: 'var(--text)' }}>
+            {composite}%
+          </span>
         </div>
       </div>
 
@@ -127,14 +105,13 @@ function DayRow({ entry, entries, isExpanded, onToggle, onEdit }) {
                 <div key={factor.id} className="flex items-center gap-4 px-5 py-3.5" style={{ background: 'var(--bg)' }}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{factor.shortName}</span>
-                      <span className="text-[9px] font-medium" style={{ color: 'var(--text-3)' }}>WT {factor.weight}</span>
+                      <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{factor.shortName}</span>
+                      <span className="text-[9px] font-medium font-mono" style={{ color: 'var(--text-3)' }}>WT {factor.weight}</span>
                     </div>
                     <div className="text-[11px] mt-0.5" style={{ color: 'var(--text-2)' }}>
                       {rubric ? `${rubric.label} — ${rubric.desc}` : ''}
                     </div>
                   </div>
-                  {/* Progress bar */}
                   <div className="w-24 sm:w-32 flex-shrink-0">
                     <div className="h-1 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
                       <div className="h-full rounded-full transition-all duration-500"
@@ -145,7 +122,7 @@ function DayRow({ entry, entries, isExpanded, onToggle, onEdit }) {
                       />
                     </div>
                   </div>
-                  <div className="text-lg font-light tabular-nums flex-shrink-0 w-6 text-right">
+                  <div className="text-lg font-light tabular-nums flex-shrink-0 w-6 text-right" style={{ color: 'var(--text)' }}>
                     {score}
                   </div>
                 </div>
@@ -182,18 +159,13 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
   );
 
   const latest = sorted.length > 0 ? sorted[sorted.length - 1] : null;
+  const prevEntry = sorted.length > 1 ? sorted[sorted.length - 2] : null;
   const latestComposite = latest ? calculateComposite(latest.scores) : 0;
+  const prevComposite = prevEntry ? calculateComposite(prevEntry.scores) : null;
+  const delta = prevComposite !== null ? latestComposite - prevComposite : null;
   const latestVerdict = latest ? getVerdict(latestComposite) : null;
-  const readiness = checkReturnReadiness(entries);
 
   const hasTodayEntry = entries.some(e => e.date === today);
-
-  const readinessChecks = [
-    { label: '3+ day uptrend', met: readiness.uptrend, detail: `${readiness.consecutiveDays} days` },
-    { label: 'Composite > 65', met: readiness.above65, detail: `Currently ${readiness.composite ?? '—'}` },
-    { label: 'Exit viability ≥ 4', met: readiness.exitOk, detail: readiness.exitOk ? 'Available' : 'Insufficient' },
-    { label: 'Healthcare ≥ 4', met: readiness.healthcareOk, detail: readiness.healthcareOk ? 'Accessible' : 'Limited' },
-  ];
 
   const handleImport = async (e) => {
     const file = e.target.files?.[0];
@@ -213,75 +185,98 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
 
   return (
     <div className="animate-in">
-      {/* ═══════ HERO ═══════ */}
-      <section className="relative w-full overflow-hidden" style={{ height: '100vh', minHeight: '600px' }}>
-        {/* Background */}
+      {/* ═══════ HERO — Full bleed with Dubai skyline ═══════ */}
+      <section className="relative w-full overflow-hidden" style={{ height: '52vh', minHeight: '420px' }}>
+        {/* Background image */}
         <img src={heroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        {/* Dark gradient overlay — fades to bg color */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.5) 100%)',
+          backgroundImage: `
+            linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 100%),
+            linear-gradient(180deg, rgba(30,42,47,0) 40%, rgba(30,42,47,0.6) 70%, rgb(30,42,47) 95%)
+          `,
         }} />
 
-        {/* Top bar */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start px-6 sm:px-10 pt-8 sm:pt-10">
-          <div>
-            <div className="text-white/90 text-[11px] font-medium tracking-[0.2em] uppercase">Dubai Travel</div>
-            <div className="text-white text-[11px] font-bold tracking-[0.2em] uppercase">Dashboard</div>
-          </div>
-          <div className="text-white/70 text-[11px] font-medium text-right tracking-wide">
-            {formatHeroDate(today)}
-          </div>
-        </div>
-
-        {/* Score */}
-        <div className="absolute left-6 sm:left-10 z-10 animate-score" style={{ bottom: '30%' }}>
-          <div className="text-white font-extralight leading-[0.85] tracking-[-0.04em]"
-            style={{ fontSize: 'clamp(100px, 22vw, 300px)' }}>
-            {latestComposite}<span className="text-[0.65em]">%</span>
+        {/* Header bar */}
+        <div className="absolute top-0 left-0 right-0 z-10">
+          <div className="max-w-[1344px] mx-auto px-6 sm:px-12 pt-4 pb-4 flex items-center gap-2"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            {/* Logo icon */}
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="flex-shrink-0">
+              <circle cx="16" cy="16" r="15" stroke="white" strokeWidth="1" opacity="0.6" />
+              <path d="M16 8L16 24M10 14L16 8L22 14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+            </svg>
+            <span className="font-sen font-bold text-white text-lg lowercase tracking-tight" style={{ letterSpacing: '-0.04em' }}>
+              dubai travel protocol
+            </span>
           </div>
         </div>
 
-        {/* Recommendation */}
-        <div className="absolute left-6 sm:left-10 bottom-16 sm:bottom-20 z-10">
-          <p className="text-white/60 text-sm mb-1">Recommendation:</p>
-          <p className="text-white text-xl sm:text-2xl font-light leading-snug">
+        {/* Hero title — centered */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 sm:px-12">
+          <h1 className="font-syne font-bold text-white text-center leading-[1.05] tracking-tight"
+            style={{ fontSize: 'clamp(40px, 8vw, 120px)', letterSpacing: '-0.02em' }}>
+            Is it Safe to Travel to Dubai Today?
+          </h1>
+        </div>
+      </section>
+
+      {/* ═══════ SCORE STRIP ═══════ */}
+      <section className="max-w-[1344px] mx-auto px-6 sm:px-12 pt-8 pb-2">
+        <div className="flex flex-col gap-2">
+          <p className="font-grotesk font-semibold text-[17px] leading-[24px]" style={{ color: 'var(--text)' }}>
             {getRecommendation(latestVerdict)}
           </p>
-        </div>
-
-        {/* Right panel — readiness conditions */}
-        <div className="absolute right-6 sm:right-10 bottom-16 sm:bottom-20 z-10 hidden md:block">
-          <div className="rounded-xl px-5 py-4 space-y-2.5"
-            style={{ background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
-            {readinessChecks.map(check => (
-              <div key={check.label} className="flex items-center gap-3">
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{
-                  background: check.met ? '#22C55E' : 'rgba(255,255,255,0.3)',
-                }} />
-                <span className="text-white/60 text-[11px]">
-                  {check.label}: <span className="text-white/90">{check.detail}</span>
-                </span>
-              </div>
-            ))}
+          <div className="flex items-baseline gap-2">
+            <span className="font-syne font-bold text-[34px] leading-[40px]" style={{ letterSpacing: '-0.01em', color: 'var(--text)' }}>
+              {latestComposite}%
+            </span>
+            {delta !== null && (
+              <span className="font-mono text-[13px] leading-[16px]" style={{ color: 'var(--text-2)' }}>
+                {delta >= 0 ? '+' : ''}{delta.toFixed(1)}% yesterday
+              </span>
+            )}
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute left-6 sm:left-10 bottom-6 z-10">
-          <span className="text-white/30 text-[9px] tracking-[0.3em] uppercase font-medium">Scroll</span>
         </div>
       </section>
 
       {/* ═══════ CHART ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-6 sm:px-10 pt-16 pb-8">
+      <section className="max-w-[1344px] mx-auto px-6 sm:px-12 pt-6 pb-6">
         <TrendChart entries={entries} />
       </section>
 
-      {/* ═══════ ACTIONS ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-6 sm:px-10 pb-12">
-        <div className="flex items-center gap-3 flex-wrap">
+      {/* ═══════ TABLE ═══════ */}
+      <section className="max-w-[1344px] mx-auto px-6 sm:px-12 pt-6 pb-16">
+        {/* Table header */}
+        <div className="flex items-center py-1 mb-0">
+          <div className="flex items-center">
+            <span className="font-mono font-bold text-[13px] leading-[16px]" style={{ color: 'var(--text)' }}>
+              Day
+            </span>
+            <span className="ml-0.5" style={{ color: 'var(--text-3)' }}>▾</span>
+          </div>
+        </div>
+
+        {/* Day rows */}
+        <div>
+          {[...sorted].reverse().map((entry, idx) => (
+            <DayRow
+              key={entry.date}
+              entry={entry}
+              entries={entries}
+              prevEntry={idx < sorted.length - 1 ? [...sorted].reverse()[idx + 1] : null}
+              isExpanded={expandedDate === entry.date}
+              onToggle={() => setExpandedDate(prev => prev === entry.date ? null : entry.date)}
+              onEdit={() => onEditDay(entry.date)}
+            />
+          ))}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-3 flex-wrap mt-8">
           <button
             onClick={() => onEditDay(today)}
-            className="text-xs font-medium px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
+            className="font-jakarta text-xs font-medium px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
             style={{
               background: hasTodayEntry ? 'transparent' : 'var(--text)',
               color: hasTodayEntry ? 'var(--text)' : 'var(--bg)',
@@ -292,7 +287,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
           </button>
           <button
             onClick={openAllSources}
-            className="text-xs font-medium px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
+            className="font-jakarta text-xs font-medium px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
             style={{ background: 'transparent', color: 'var(--text-2)', border: '1px solid var(--border)' }}
           >
             Open all sources ↗
@@ -300,44 +295,20 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </div>
       </section>
 
-      {/* ═══════ DAYS ═══════ */}
-      <section className="max-w-[1100px] mx-auto px-6 sm:px-10 pb-16">
-        <div className="flex items-end justify-between mb-8">
-          <h2 className="text-4xl sm:text-5xl font-extralight leading-none tracking-tight">Days</h2>
-          <div className="flex items-center gap-6">
-            <span className="label-caps-sm">{entries.length} days tracked</span>
-          </div>
-        </div>
-
-        {/* Day rows */}
-        <div style={{ borderTop: '1px solid var(--border)' }}>
-          {[...sorted].reverse().map(entry => (
-            <DayRow
-              key={entry.date}
-              entry={entry}
-              entries={entries}
-              isExpanded={expandedDate === entry.date}
-              onToggle={() => setExpandedDate(prev => prev === entry.date ? null : entry.date)}
-              onEdit={() => onEditDay(entry.date)}
-            />
-          ))}
-        </div>
-      </section>
-
       {/* ═══════ FOOTER ═══════ */}
-      <footer className="border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg-alt)' }}>
-        <div className="max-w-[1100px] mx-auto px-6 sm:px-10 py-12">
+      <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-alt)' }}>
+        <div className="max-w-[1344px] mx-auto px-6 sm:px-12 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
               <span className="label-caps-sm block mb-3">Methodology</span>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+              <p className="font-jakarta text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
                 9 weighted factors (1–5 scale) across security, logistics, healthcare, and diplomacy.
                 Composite = weighted normalisation to 0–100. Total weight: 33 points.
               </p>
             </div>
             <div>
               <span className="label-caps-sm block mb-3">Decision Rule</span>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+              <p className="font-jakarta text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
                 Never return on a single day's score. Require 3+ consecutive days of upward trend
                 AND composite above 65, with Exit Viability and Healthcare each independently ≥ 4.
               </p>
@@ -346,12 +317,12 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
               <span className="label-caps-sm block mb-3">Data</span>
               <div className="flex gap-2 flex-wrap">
                 <button onClick={() => exportJSON(entries)}
-                  className="text-[10px] font-medium px-3 py-1.5 rounded-full transition-colors hover:opacity-70"
+                  className="font-jakarta text-[10px] font-medium px-3 py-1.5 rounded-full transition-colors hover:opacity-70"
                   style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
                   Export JSON
                 </button>
                 <button onClick={() => fileRef.current?.click()}
-                  className="text-[10px] font-medium px-3 py-1.5 rounded-full transition-colors hover:opacity-70"
+                  className="font-jakarta text-[10px] font-medium px-3 py-1.5 rounded-full transition-colors hover:opacity-70"
                   style={{ color: 'var(--text-2)', border: '1px solid var(--border)' }}>
                   Import JSON
                 </button>
@@ -360,12 +331,12 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
             </div>
           </div>
 
-          <div className="mt-10 pt-6 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
-            style={{ borderColor: 'var(--border)' }}>
-            <span className="text-[10px] font-medium" style={{ color: 'var(--text-3)' }}>
-              Dubai Return Protocol v1.0
+          <div className="mt-10 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"
+            style={{ borderTop: '1px solid var(--border)' }}>
+            <span className="font-jakarta text-[10px] font-medium" style={{ color: 'var(--text-3)' }}>
+              Dubai Travel Protocol v1.0
             </span>
-            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+            <span className="font-jakarta text-[10px]" style={{ color: 'var(--text-3)' }}>
               Personal Decision Framework — Not Professional Advice
             </span>
           </div>
