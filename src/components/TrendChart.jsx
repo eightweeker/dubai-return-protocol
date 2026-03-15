@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
-import { calculateComposite, formatDate } from '../lib/scoring';
+import { calculateComposite } from '../lib/scoring';
 
 function smoothPath(points) {
   if (points.length < 2) return '';
@@ -20,7 +20,7 @@ function smoothPath(points) {
 
 export default function TrendChart({ entries }) {
   const svgRef = useRef(null);
-  const [pathLengths, setPathLengths] = useState({});
+  const [pathLen, setPathLen] = useState(0);
 
   const sorted = useMemo(() =>
     [...entries].sort((a, b) => a.date.localeCompare(b.date)),
@@ -39,9 +39,7 @@ export default function TrendChart({ entries }) {
     if (!svgRef.current) return;
     const timer = setTimeout(() => {
       const path = svgRef.current.querySelector('[data-line-id="composite"]');
-      if (path) {
-        setPathLengths({ composite: path.getTotalLength() });
-      }
+      if (path) setPathLen(path.getTotalLength());
     }, 50);
     return () => clearTimeout(timer);
   }, [data]);
@@ -49,97 +47,102 @@ export default function TrendChart({ entries }) {
   if (data.length < 2) return null;
 
   const W = 1200;
-  const H = 320;
-  const pad = { top: 24, right: 16, bottom: 40, left: 48 };
+  const H = 300;
+  const pad = { top: 8, right: 0, bottom: 32, left: 48 };
   const plotW = W - pad.left - pad.right;
   const plotH = H - pad.top - pad.bottom;
 
-  const maxVal = 100;
-  const gridLines = [0, 100, 200, 300, 400];
+  // Y-axis: 0 to 400 (Figma gridlines)
+  const yMax = 400;
+  const gridVals = [0, 100, 200, 300, 400];
 
   const xScale = (i) => pad.left + (i / (data.length - 1)) * plotW;
-  const yScale = (val) => pad.top + plotH - (Math.max(0, Math.min(maxVal, val)) / maxVal) * plotH;
+  const yScale = (val) => pad.top + plotH - (Math.max(0, Math.min(yMax, val)) / yMax) * plotH;
 
-  const points = data.map((d, i) => [xScale(i), yScale(d.composite)]);
+  // Map composite 0-100 to chart 0-400 range so line uses ~bottom quarter
+  const chartVal = (composite) => composite * 4;
+
+  const points = data.map((d, i) => [xScale(i), yScale(chartVal(d.composite))]);
   const pathD = smoothPath(points);
   const areaD = pathD
     + ` L ${points[points.length - 1][0]},${pad.top + plotH}`
     + ` L ${points[0][0]},${pad.top + plotH} Z`;
 
-  const len = pathLengths.composite || 0;
-  const hasLen = len > 0;
+  const hasLen = pathLen > 0;
 
-  // X-axis labels: first, middle, last
+  // X-axis month labels: show first, middle, last
+  const monthLabel = (dateStr) => {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short' });
+  };
+
   const xLabels = [];
-  if (data.length > 0) {
-    const firstDate = new Date(data[0].date + 'T12:00:00');
-    const lastDate = new Date(data[data.length - 1].date + 'T12:00:00');
-    const midIdx = Math.floor(data.length / 2);
-    const midDate = new Date(data[midIdx].date + 'T12:00:00');
-    const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short' });
-    xLabels.push({ x: xScale(0), label: fmt(firstDate) });
-    if (data.length > 4) xLabels.push({ x: xScale(midIdx), label: fmt(midDate) });
-    xLabels.push({ x: xScale(data.length - 1), label: fmt(lastDate) });
+  if (data.length >= 2) {
+    xLabels.push({ x: xScale(0), label: monthLabel(data[0].date), anchor: 'start' });
+    if (data.length > 4) {
+      const mid = Math.floor(data.length / 2);
+      xLabels.push({ x: xScale(mid), label: monthLabel(data[mid].date), anchor: 'middle' });
+    }
+    xLabels.push({ x: xScale(data.length - 1), label: monthLabel(data[data.length - 1].date), anchor: 'end' });
   }
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ padding: '24px 0 48px' }}>
-      <svg ref={svgRef} width="100%" viewBox={`0 0 ${W} ${H}`} className="block overflow-visible">
-        <defs>
-          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.15)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-          </linearGradient>
-        </defs>
+    <svg ref={svgRef} width="100%" viewBox={`0 0 ${W} ${H}`} className="block overflow-visible">
+      <defs>
+        <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </linearGradient>
+      </defs>
 
-        {/* Grid lines + Y labels */}
-        {gridLines.map(val => {
-          const y = pad.top + plotH - (val / 400) * plotH;
-          return (
-            <g key={val}>
-              <line
-                x1={pad.left} y1={y}
-                x2={W - pad.right} y2={y}
-                stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-                strokeDasharray={val === 0 ? 'none' : '4,4'}
-              />
-              <text x={pad.left - 8} y={y + 4}
-                fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Familjen Grotesk" textAnchor="end">
-                {val}
-              </text>
-            </g>
-          );
-        })}
+      {/* Gridlines + Y labels */}
+      {gridVals.map(val => {
+        const y = yScale(val);
+        return (
+          <g key={val}>
+            <line
+              x1={pad.left} y1={y}
+              x2={W - pad.right} y2={y}
+              stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
+              strokeDasharray={val === 0 ? 'none' : '4,4'}
+            />
+            <text x={pad.left - 8} y={y + 4}
+              fill="rgba(255,255,255,0.4)" fontSize="13"
+              fontFamily="Familjen Grotesk, sans-serif" textAnchor="end">
+              {val}
+            </text>
+          </g>
+        );
+      })}
 
-        {/* Area fill */}
-        <path d={areaD} fill="url(#areaFill)" opacity={hasLen ? 1 : 0}
-          style={{ transition: 'opacity 0.8s ease 0.4s' }} />
+      {/* Area fill */}
+      <path d={areaD} fill="url(#chartFill)" opacity={hasLen ? 1 : 0}
+        style={{ transition: 'opacity 0.8s ease 0.3s' }} />
 
-        {/* Line */}
-        <path
-          data-line-id="composite"
-          d={pathD}
-          fill="none" stroke="white"
-          strokeWidth="2.5"
-          style={{
-            strokeDasharray: len || 'none',
-            strokeDashoffset: 0,
-            animation: len ? 'drawLine 1.5s ease-out 0.1s both' : 'none',
-            '--line-length': len,
-          }}
-        />
+      {/* Line */}
+      <path
+        data-line-id="composite"
+        d={pathD}
+        fill="none" stroke="white" strokeWidth="2.5"
+        style={{
+          strokeDasharray: pathLen || 'none',
+          strokeDashoffset: 0,
+          animation: pathLen ? 'drawLine 1.5s ease-out 0.1s both' : 'none',
+          '--line-length': pathLen,
+        }}
+      />
 
-        {/* X-axis labels */}
-        {xLabels.map((item, i) => (
-          <text key={i}
-            x={item.x} y={H - 4}
-            fill="rgba(255,255,255,0.5)" fontSize="13" fontFamily="Familjen Grotesk"
-            textAnchor={i === 0 ? 'start' : i === xLabels.length - 1 ? 'end' : 'middle'}
-          >
-            {item.label}
-          </text>
-        ))}
-      </svg>
-    </div>
+      {/* X-axis month labels */}
+      {xLabels.map((item, i) => (
+        <text key={i}
+          x={item.x} y={H - 4}
+          fill="rgba(255,255,255,0.5)" fontSize="13"
+          fontFamily="Familjen Grotesk, sans-serif"
+          textAnchor={item.anchor}
+        >
+          {item.label}
+        </text>
+      ))}
+    </svg>
   );
 }
