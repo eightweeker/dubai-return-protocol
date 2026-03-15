@@ -196,7 +196,7 @@ export default function Overview({ entries, onEditDay, onUpdateEntries }) {
         </header>
 
         {/* ── HERO TITLE ── */}
-        <div className="pt-[200px] sm:pt-[120px] pb-[176px] sm:pb-[72px] text-center">
+        <div className="text-center hero-title-spacing">
           <h1 className="font-syne font-bold text-white leading-[1] tracking-[-2.4px]"
             style={{ fontSize: 'clamp(34px, 8.3vw, 120px)' }}>
             Is it Safe to Travel to<br />Dubai Today?
